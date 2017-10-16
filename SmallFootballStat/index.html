@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="src/c/initialize.js"></script>
+    <script src="src/m/League.js"></script>
+    <script src="src/v/SaveLeague.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"
+          integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+</head>
+<body onload="callApi()">
+<div>
+    <a href="my-league-list.html">Мои лиги</a>
+</div>
+<label for="filter"> Фильтровать по на названию </label>
+<input id="filter" onchange="filter(event)"/>
+<div id="container">
+
+</div>
+</body>
+</html>
+<script>
+    function filter(event) {
+        event.preventDefault();
+        var container = document.getElementById("container");
+        var paragraphs = container.getElementsByTagName("p");
+        var m = [];
+        console.log(paragraphs);
+        var filter = document.getElementById("filter").value;
+        console.log(filter);
+        if (filter.length > 0) {
+            for (var p = 0; p < paragraphs.length; p++) {
+                if (paragraphs[p].innerText !== filter) {
+                    m.push(p);
+                } else {
+
+                }
+            }
+        } else {
+            for (var x = 0; x < paragraphs.length; x++) {
+                document.getElementById("container").removeChild(paragraphs[x]);
+            }
+            callApi();
+        }
+        for (var x = 0; x < m.length; x++) {
+            document.getElementById("container").removeChild(document.getElementById([m[x]]));
+        }
+    }
+
+    function callApi() {
+        var ajax = new XMLHttpRequest();
+        ajax.onload = functionName;
+        ajax.onerror = errorFuncName;
+        ajax.open("GET", "http://www.football-data.org/v1/competitions", true);
+        ajax.send();
+
+        function functionName() {
+            console.log(this);
+            if (this.status == 200) {
+                var text = JSON.parse(this.responseText);
+                console.log(text);
+                for (var param in text) {
+                    document.getElementById("container").innerHTML +=
+                        "<div class=\"container\">" +
+                        "<div class='row' id =" + param + ">" +
+                        "<div class='col'>" +
+                        "<p style=" + "'background-color: aqua;'" + ">" + text[param].league + "</p>" +
+                        "</div>" +
+                        "<div class='col'>" +
+                        "<input class='btn btn-primary' type=button onclick='pl.v.createLeague.handleSaveButtonClickEvent(event)' id=" + text[param].league +
+                        " value=Добавить в избранное>" +
+                        "</div>" +
+                        "</div>" +
+                        "</div>";
+                    console.log(text[param].league);
+                }
+            } else {
+
+            }
+        }
+
+        function errorFuncName(e) {
+            console.log(this);
+            console.error(e);
+        }
+    }
+</script>
